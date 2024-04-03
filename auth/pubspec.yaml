@@ -9,7 +9,7 @@ environment:
 dependencies:
   grpc: ^3.2.4 # Зависимость для gRPC
   protobuf: ^3.1.0 # Зависимость для IDE (protobuf)
-  stormberry: ^0.14.0 # Для работы с PostgreSQL
+  stormberry: ^0.13.0 # Для работы с PostgreSQL
   build_runner: ^2.4.9 # Для работы с моделями ORM
   jaguar_jwt: ^3.0.0 # Для создания JWT (токенов)
 

@@ -1,10 +1,8 @@
-// Функция для работы с моделью User
-
 // ignore_for_file: annotate_overrides
 
 part of 'user.dart';
 
-extension UserRepositories on Session {
+extension UserRepositories on Database {
   UserRepository get users => UserRepository._(this);
 }
 
@@ -14,7 +12,7 @@ abstract class UserRepository
         KeyedModelRepositoryInsert<UserInsertRequest>,
         ModelRepositoryUpdate<UserUpdateRequest>,
         ModelRepositoryDelete<int> {
-  factory UserRepository._(Session db) = _UserRepository;
+  factory UserRepository._(Database db) = _UserRepository;
 
   Future<UserView?> queryUser(int id);
   Future<List<UserView>> queryUsers([QueryParams? params]);
@@ -42,11 +40,11 @@ class _UserRepository extends BaseRepository
   Future<List<int>> insert(List<UserInsertRequest> requests) async {
     if (requests.isEmpty) return [];
     var values = QueryValues();
-    var rows = await db.execute(
-      Sql.named('INSERT INTO "users" ( "username", "email", "password" )\n'
-          'VALUES ${requests.map((r) => '( ${values.add(r.username)}:text, ${values.add(r.email)}:text, ${values.add(r.password)}:text )').join(', ')}\n'
-          'RETURNING "id"'),
-      parameters: values.values,
+    var rows = await db.query(
+      'INSERT INTO "users" ( "username", "email", "password" )\n'
+      'VALUES ${requests.map((r) => '( ${values.add(r.username)}:text, ${values.add(r.email)}:text, ${values.add(r.password)}:text )').join(', ')}\n'
+      'RETURNING "id"',
+      values.values,
     );
     var result = rows.map<int>((r) => TextEncoder.i.decode(r.toColumnMap()['id'])).toList();
 
@@ -57,13 +55,13 @@ class _UserRepository extends BaseRepository
   Future<void> update(List<UserUpdateRequest> requests) async {
     if (requests.isEmpty) return;
     var values = QueryValues();
-    await db.execute(
-      Sql.named('UPDATE "users"\n'
-          'SET "username" = COALESCE(UPDATED."username", "users"."username"), "email" = COALESCE(UPDATED."email", "users"."email"), "password" = COALESCE(UPDATED."password", "users"."password")\n'
-          'FROM ( VALUES ${requests.map((r) => '( ${values.add(r.id)}:int8::int8, ${values.add(r.username)}:text::text, ${values.add(r.email)}:text::text, ${values.add(r.password)}:text::text )').join(', ')} )\n'
-          'AS UPDATED("id", "username", "email", "password")\n'
-          'WHERE "users"."id" = UPDATED."id"'),
-      parameters: values.values,
+    await db.query(
+      'UPDATE "users"\n'
+      'SET "username" = COALESCE(UPDATED."username", "users"."username"), "email" = COALESCE(UPDATED."email", "users"."email"), "password" = COALESCE(UPDATED."password", "users"."password")\n'
+      'FROM ( VALUES ${requests.map((r) => '( ${values.add(r.id)}:int8::int8, ${values.add(r.username)}:text::text, ${values.add(r.email)}:text::text, ${values.add(r.password)}:text::text )').join(', ')} )\n'
+      'AS UPDATED("id", "username", "email", "password")\n'
+      'WHERE "users"."id" = UPDATED."id"',
+      values.values,
     );
   }
 }

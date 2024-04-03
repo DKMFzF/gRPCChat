@@ -10,7 +10,8 @@ late Database db;
   именем пользователя и без использования SSL.
 */
 Database initDataBase() => Database(
+    debugPrint: true,
     port: 4500,
     password: 'AngryBirds123',
-    username: 'kirill',
+    user: 'kirill',
     useSSL: false,);
