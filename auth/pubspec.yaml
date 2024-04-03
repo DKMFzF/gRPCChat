@@ -8,8 +8,8 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  grpc: ^3.2.4
-  protobuf: ^3.1.0
+  grpc: ^3.2.4 # Зависимость для gRPC
+  protobuf: ^3.1.0 # Зависимость для IDE (protobuf)
 
 dev_dependencies:
   lints: ^3.0.0
