@@ -1,6 +1,9 @@
+// Функции тестировки и запуска сервера
+
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:auth/data/db.dart';
 import 'package:auth/domain/auth_rpc.dart';
 import 'package:grpc/grpc.dart';
 
@@ -10,13 +13,19 @@ import 'package:grpc/grpc.dart';
   возникающие во время выполнения.
 */
 Future<void> startServer() async {
-  final authServer = Server(
+  runZonedGuarded(() async {
+    final authServer = Server(
     [AuthRpc()],
     <Interceptor>[],
     CodecRegistry(codecs: [GzipCodec()]),);
-  await authServer.serve(port: 4400);
-  log("SERVER STARTING ON PORT ${authServer.port}");
-  runZonedGuarded(() => null, (error, stackTrace) {
+    await authServer.serve(port: 4400);
+    log("SERVER STARTING ON PORT ${authServer.port}");
+
+    db = initDataBase();
+    db.open();
+    log('DB OPENED SUCCESSFULLY');
+
+  }, (error, stackTrace) {
     log("Error", error: error);
   });
 }
