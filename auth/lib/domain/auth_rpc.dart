@@ -1,4 +1,7 @@
+import 'package:auth/data/db.dart';
+import 'package:auth/data/user/user.dart';
 import 'package:auth/generated/auth.pbgrpc.dart';
+import 'package:grpc/grpc.dart';
 import 'package:grpc/src/server/call.dart';
 
 class AuthRpc extends AuthRpcServiceBase {
@@ -32,9 +35,20 @@ class AuthRpc extends AuthRpcServiceBase {
   }
 
   @override
-  Future<TokensDto> siginUp(ServiceCall call, UserDto request) {
-    // TODO: implement siginUp
-    throw UnimplementedError();
+  Future<TokensDto> siginUp(ServiceCall call, UserDto request) async {
+    // Проверка данных
+    if (request.email.isEmpty) throw GrpcError.invalidArgument('Email not found');
+    if (request.password.isEmpty) throw GrpcError.invalidArgument('Password not found');
+    if (request.username.isEmpty) throw GrpcError.invalidArgument('Username not fount');
+
+    // Создание id пользователя
+    final id = await db.users.insertOne(UserInsertRequest(
+      username: request.username, 
+      email: request.email,
+      password: request.password
+    ));
+
+    // Создание токенов
   }
 
   @override
