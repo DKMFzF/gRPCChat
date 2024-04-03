@@ -15,7 +15,7 @@ Future<void> startServer() async {
     <Interceptor>[],
     CodecRegistry(codecs: [GzipCodec()]),);
   await authServer.serve(port: 4400);
-  log("Server listening on port ${authServer.port}");
+  log("SERVER STARTING ON PORT ${authServer.port}");
   runZonedGuarded(() => null, (error, stackTrace) {
     log("Error", error: error);
   });

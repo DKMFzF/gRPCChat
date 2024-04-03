@@ -1,15 +1,15 @@
 name: auth
 description: A sample command-line application.
-version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+version: 1.2.0
+repository: https://github.com/DKMFzF/gRPCChat.git
 
 environment:
   sdk: ^3.3.3
 
-# Add regular dependencies here.
 dependencies:
   grpc: ^3.2.4 # Зависимость для gRPC
   protobuf: ^3.1.0 # Зависимость для IDE (protobuf)
+  stormberry: ^0.14.0 # Для работы с PostgreSQL
 
 dev_dependencies:
   lints: ^3.0.0
