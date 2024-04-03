@@ -1,8 +1,8 @@
-// Функции для работы с User ORM моделью
+// Функция для работы с моделью User
 
 // ignore_for_file: annotate_overrides
 
-part of 'user.dart'; // добовляет user для генерации кода
+part of 'user.dart';
 
 extension UserRepositories on Session {
   UserRepository get users => UserRepository._(this);

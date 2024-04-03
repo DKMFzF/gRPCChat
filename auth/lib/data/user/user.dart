@@ -3,8 +3,7 @@
 import 'package:stormberry/stormberry.dart';
 part 'user.schema.dart'; // схема для работы с моделью User
 
-@Model(
-  indexes: [ 
+@Model(indexes: [ 
     TableIndex(name: 'email', columns: ['email'], unique: true),
     TableIndex(name: 'username', columns: ['username'], unique: true),
   ]
