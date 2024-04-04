@@ -10,10 +10,12 @@ import 'package:stormberry/stormberry.dart';
 
 class AuthRpc extends AuthRpcServiceBase {
 
+  // Удаление пользователя из базы данных
   @override
-  Future<ResponseDto> deleteUser(ServiceCall call, RequestDto request) {
-    // TODO: implement deleteUser
-    throw UnimplementedError();
+  Future<ResponseDto> deleteUser(ServiceCall call, RequestDto request) async {
+    final id = Utils.getIdFromMetaData(call);
+    await db.users.deleteOne(id);
+    return ResponseDto(message: 'User deleted');    
   }
 
   /* 
