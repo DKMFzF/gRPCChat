@@ -53,10 +53,10 @@ class AuthRpc extends AuthRpcServiceBase {
     // Создание id пол пользователя при обращении к базе данных
     final id = await db.users.insertOne(UserInsertRequest(
       username: request.username, 
-      email: request.email,
+      email: Utils.encryptField(request.email),
       password: Utils.getCashPassword(request.password) // Применяем кэширование
     ));
-
+    
     return _createTokens(id.toString()); // Создание токена
   }
 
