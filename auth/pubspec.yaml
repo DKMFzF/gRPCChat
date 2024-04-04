@@ -12,6 +12,7 @@ dependencies:
   stormberry: ^0.13.0 # Для работы с PostgreSQL
   build_runner: ^2.4.9 # Для работы с моделями ORM
   jaguar_jwt: ^3.0.0 # Для создания JWT (токенов)
+  crypto: ^3.0.3 # Для кэширования пароля
 
 dev_dependencies:
   lints: ^3.0.0

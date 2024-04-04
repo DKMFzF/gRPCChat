@@ -14,16 +14,19 @@ import 'package:grpc/grpc.dart';
 */
 Future<void> startServer() async {
   runZonedGuarded(() async {
+    // Запуск сервера
     final authServer = Server(
         [AuthRpc()], 
         <Interceptor>[], 
         CodecRegistry(codecs: [GzipCodec()]));
     await authServer.serve(port: 4400);
-    log("Server listen port ${authServer.port}");
+    log("SERVER LISTING ON PORT ${authServer.port}");
 
+    // Подключение DataBase
     db = initDataBase();
     db.open();
     log('DATABASE OPEN SERVER');
+
   }, (error, stack) {
     log("Error", error: error);
   });
