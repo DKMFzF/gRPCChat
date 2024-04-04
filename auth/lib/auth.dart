@@ -20,6 +20,7 @@ Future<void> startServer() async {
         CodecRegistry(codecs: [GzipCodec()]));
     await authServer.serve(port: 4400);
     log("Server listen port ${authServer.port}");
+
     db = initDataBase();
     db.open();
     log('DATABASE OPEN SERVER');

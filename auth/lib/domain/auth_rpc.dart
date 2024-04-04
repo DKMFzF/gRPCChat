@@ -44,7 +44,7 @@ class AuthRpc extends AuthRpcServiceBase {
   @override
   Future<TokensDto> siginUp(ServiceCall call, UserDto request) async {
     // Проверка данных
-    if (db.connection().isClosed) db = initDataBase() ;
+    if (db.connection().isClosed) db = initDataBase(); // Првоерка на подключение к BD
     if (request.email.isEmpty) throw GrpcError.invalidArgument('Email not found');
     if (request.password.isEmpty) throw GrpcError.invalidArgument('Password not found');
     if (request.username.isEmpty) throw GrpcError.invalidArgument('Username not fount');
@@ -70,15 +70,15 @@ class AuthRpc extends AuthRpcServiceBase {
     и обновления для данного идентификатора пользователя.
   */
   TokensDto _createTokens(String id) {
-    // Генерация токенов
+    // Настройка токенов
     final accessTokenSet = JwtClaim(
       maxAge: Duration(hours: Env.accessTokenLife),
       otherClaims: {'user_id': id},);
     final refreshTokenClaim = JwtClaim(
       maxAge: Duration(hours: Env.refreshTokenLife),
-      otherClaims: {'user_id': id},
-    );
+      otherClaims: {'user_id': id},);
 
+    // Генерация токенов
     return TokensDto(
       accessToken: issueJwtHS256(accessTokenSet, Env.sk),
       refreshToken: issueJwtHS256(refreshTokenClaim, Env.sk), 
