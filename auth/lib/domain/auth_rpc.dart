@@ -6,6 +6,7 @@ import 'package:auth/Utils/utils.dart';
 import 'package:grpc/grpc.dart';
 import 'package:grpc/src/server/call.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
+import 'package:stormberry/stormberry.dart';
 
 class AuthRpc extends AuthRpcServiceBase {
 
@@ -28,13 +29,34 @@ class AuthRpc extends AuthRpcServiceBase {
   }
 
   /*
-    Функция, которая регистрирует пользователя, 
-    используя данный вызов службы и пользовательские данные, 
-    возвращая TokensDto.
+    Функция, которая выполняет вход пользователя, 
+    проверяя входные данные, учетные данные пользователя
+    и создавая токены при успешном входе. Принимает объект ServiceCall
+    и объект UserDto в качестве параметров. Возвращает объект TokensDto.
   */
   @override
-  Future<TokensDto> siginIn(ServiceCall call, UserDto request) {
-    return Future(() => TokensDto(accessToken: "test", refreshToken: "test"));
+  Future<TokensDto> siginIn(ServiceCall call, UserDto request) async {
+    // Проверки вводимых данных
+    if (db.connection().isClosed) db = initDataBase();
+    if (request.email.isEmpty) throw GrpcError.invalidArgument('Email not found');
+    if (request.password.isEmpty) throw GrpcError.invalidArgument('Password not found');
+
+    // Поиск пользователя
+    final hashPassword = Utils.getCashPassword(request.password);
+    final users = await db.users.queryUsers(QueryParams(
+      where: 'email=@email',
+      values: {'email': Utils.encryptField(request.email)},
+    ));
+
+    // Проверка на наличие пользователя
+    if (users.isEmpty) throw GrpcError.notFound('User not found');
+
+    final user = users.first;
+
+    // Проверка хэша пароля с паролем в базе данных
+    if (hashPassword != user.password) throw GrpcError.unauthenticated('Wrong Password!');
+
+    return _createTokens(user.id.toString()); // Создание токена
   }
   
   /*
