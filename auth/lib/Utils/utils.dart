@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'package:auth/env.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:grpc/grpc.dart';
+import 'package:jaguar_jwt/jaguar_jwt.dart';
 
 abstract class Utils {
   // Конвертация парля в кэш
@@ -22,5 +24,22 @@ abstract class Utils {
     return isDecode
       ? encryptor.decrypt64(value, iv: iv) // Дешифровка
       : encryptor.encrypt(value, iv: iv).base64; // Шифровка
+  }
+
+  /*  
+    Изъятие id из токена
+    @param: String token - токен для извлечения id
+    return: значение: id пользователя из токена
+    Exception: GrpcError в случае отсутствия id в токене
+  */
+  static int getIdFromToken(String token) {
+
+    // Изъятие id из токена
+    final jwtClaim = verifyJwtHS256Signature(token, Env.sk);
+    final id = int.tryParse(jwtClaim['user_id']);
+
+    // Проверерка на получение id из токена
+    if (id == null) throw GrpcError.dataLoss('User Id not found');
+    return id;
   }
 }

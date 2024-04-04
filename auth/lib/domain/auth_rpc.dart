@@ -22,10 +22,21 @@ class AuthRpc extends AuthRpcServiceBase {
     throw UnimplementedError();
   }
 
+  /*
+    Метод, который выполняет обновление токена. Принимает объект ServiceCall
+    и объект TokensDto в качестве параметров. Возвращает объект TokensDto. 
+  */
   @override
-  Future<TokensDto> refreshToken(ServiceCall call, TokensDto request) {
-    // TODO: implement refreshToken
-    throw UnimplementedError();
+  Future<TokensDto> refreshToken(ServiceCall call, TokensDto request) async {
+    // Проверки вводимых данных
+    if (db.connection().isClosed) db = initDataBase();
+    if (request.refreshToken.isEmpty) throw GrpcError.invalidArgument('Refresh Token not found');
+
+    // Поиск пользователя по id
+    final id = Utils.getIdFromToken(request.refreshToken);
+    final user = await db.users.queryUser(id); // Зарос пользователя по id
+    if (user == null) throw GrpcError.notFound('User not found');
+    return _createTokens(user.id.toString());
   }
 
   /*
