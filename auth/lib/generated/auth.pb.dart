@@ -13,6 +13,11 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
+enum UserDto_OptionalPassword {
+  password, 
+  notSet
+}
+
 class UserDto extends $pb.GeneratedMessage {
   factory UserDto({
     $core.String? id,
@@ -39,7 +44,12 @@ class UserDto extends $pb.GeneratedMessage {
   factory UserDto.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory UserDto.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
+  static const $core.Map<$core.int, UserDto_OptionalPassword> _UserDto_OptionalPasswordByTag = {
+    4 : UserDto_OptionalPassword.password,
+    0 : UserDto_OptionalPassword.notSet
+  };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'UserDto', createEmptyInstance: create)
+    ..oo(0, [4])
     ..aOS(1, _omitFieldNames ? '' : 'id')
     ..aOS(2, _omitFieldNames ? '' : 'username')
     ..aOS(3, _omitFieldNames ? '' : 'email')
@@ -67,6 +77,9 @@ class UserDto extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static UserDto getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<UserDto>(create);
   static UserDto? _defaultInstance;
+
+  UserDto_OptionalPassword whichOptionalPassword() => _UserDto_OptionalPasswordByTag[$_whichOneof(0)]!;
+  void clearOptionalPassword() => clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
   $core.String get id => $_getSZ(0);

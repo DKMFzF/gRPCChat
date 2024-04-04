@@ -2,7 +2,9 @@
 
 import 'dart:convert';
 
+import 'package:auth/data/user/user.dart';
 import 'package:auth/env.dart';
+import 'package:auth/generated/auth.pb.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:grpc/grpc.dart';
@@ -42,4 +44,20 @@ abstract class Utils {
     if (id == null) throw GrpcError.dataLoss('User Id not found');
     return id;
   }
+
+  /* 
+    Извлекает идентификатор из метаданных клиента 
+    в данном объекте ServiceCall, используя токен доступа. 
+    Возвращает идентификатор, полученный из токена.
+  */
+  static int getIdFromMetaData(ServiceCall serviceCall) {
+    final accessToken = serviceCall.clientMetadata?['access_token'] ?? ''; 
+    return getIdFromToken(accessToken);
+  }
+
+  // Конвертация пользователя в UserDto (Через паттерн строитель)
+  static UserDto convertUserDto(UserView user) => UserDto()
+    ..id = user.id.toString()
+    ..email = encryptField(user.email, isDecode: true)
+    ..username = user.username;
 }

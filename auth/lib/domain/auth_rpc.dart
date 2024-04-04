@@ -16,10 +16,16 @@ class AuthRpc extends AuthRpcServiceBase {
     throw UnimplementedError();
   }
 
+  /* 
+    Извлекает пользователя, используя предоставленные ServiceCall и RequestDto. 
+    Возвращает Future<UserDto>.
+  */
   @override
-  Future<UserDto> fetchUser(ServiceCall call, RequestDto request) {
-    // TODO: implement fetchUser
-    throw UnimplementedError();
+  Future<UserDto> fetchUser(ServiceCall call, RequestDto request) async {
+    final id = Utils.getIdFromMetaData(call); // Извлечение id из метаданных клиента
+    final user = await db.users.queryUser(id); // Выборка пользователя через id
+    if (user == null) throw GrpcError.notFound('User not found');
+    return Utils.convertUserDto(user);
   }
 
   /*
