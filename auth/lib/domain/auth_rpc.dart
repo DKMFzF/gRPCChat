@@ -1,10 +1,11 @@
+// Методы для работы с подключением auth.proto 
+
 import 'package:auth/data/db.dart';
 import 'package:auth/data/user/user.dart';
 import 'package:auth/env.dart';
 import 'package:auth/generated/auth.pbgrpc.dart';
 import 'package:auth/Utils/utils.dart';
 import 'package:grpc/grpc.dart';
-import 'package:grpc/src/server/call.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
 import 'package:stormberry/stormberry.dart';
 
@@ -36,8 +37,7 @@ class AuthRpc extends AuthRpcServiceBase {
   */
   @override
   Future<TokensDto> refreshToken(ServiceCall call, TokensDto request) async {
-    // Проверки вводимых данных
-    if (db.connection().isClosed) db = initDataBase();
+    // Проверки данных
     if (request.refreshToken.isEmpty) throw GrpcError.invalidArgument('Refresh Token not found');
 
     // Поиск пользователя по id
@@ -55,8 +55,7 @@ class AuthRpc extends AuthRpcServiceBase {
   */
   @override
   Future<TokensDto> siginIn(ServiceCall call, UserDto request) async {
-    // Проверки вводимых данных
-    if (db.connection().isClosed) db = initDataBase();
+    // Проверки данных
     if (request.email.isEmpty) throw GrpcError.invalidArgument('Email not found');
     if (request.password.isEmpty) throw GrpcError.invalidArgument('Password not found');
 
@@ -86,7 +85,6 @@ class AuthRpc extends AuthRpcServiceBase {
   @override
   Future<TokensDto> siginUp(ServiceCall call, UserDto request) async {
     // Проверка данных
-    if (db.connection().isClosed) db = initDataBase(); // Првоерка на подключение к BD
     if (request.email.isEmpty) throw GrpcError.invalidArgument('Email not found');
     if (request.password.isEmpty) throw GrpcError.invalidArgument('Password not found');
     if (request.username.isEmpty) throw GrpcError.invalidArgument('Username not fount');

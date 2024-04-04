@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:auth/data/db.dart';
+import 'package:auth/data/grpc_interceptors.dart';
 import 'package:auth/domain/auth_rpc.dart';
 import 'package:grpc/grpc.dart';
 
@@ -17,7 +18,9 @@ Future<void> startServer() async {
     // Запуск сервера
     final authServer = Server(
         [AuthRpc()], 
-        <Interceptor>[], 
+        <Interceptor>[
+          GrpcEnterceptors.tokenEnterceptors,
+        ], 
         CodecRegistry(codecs: [GzipCodec()]));
     await authServer.serve(port: 4400);
     log("SERVER LISTING ON PORT ${authServer.port}");
