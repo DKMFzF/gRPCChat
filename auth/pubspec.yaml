@@ -1,6 +1,6 @@
 name: auth
 description: A sample command-line application.
-version: 1.2.0
+version: 1.5.4
 repository: https://github.com/DKMFzF/gRPCChat.git
 
 environment:
@@ -13,6 +13,7 @@ dependencies:
   build_runner: ^2.4.9 # Для работы с моделями ORM
   jaguar_jwt: ^3.0.0 # Для создания JWT (токенов)
   crypto: ^3.0.3 # Для кэширования пароля
+  encrypt: ^5.0.3 # Для шифрования полей в DataBase с помощью алгоритма AES 
 
 dev_dependencies:
   lints: ^3.0.0

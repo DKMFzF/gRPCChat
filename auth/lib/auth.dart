@@ -27,7 +27,7 @@ Future<void> startServer() async {
     db.open();
     log('DATABASE OPEN SERVER');
 
-  }, (error, stack) {
+  }, (error, stack) { // Отлов ошибокы
     log("Error", error: error);
   });
 }

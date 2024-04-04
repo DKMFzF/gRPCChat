@@ -2,6 +2,7 @@ import 'package:auth/data/db.dart';
 import 'package:auth/data/user/user.dart';
 import 'package:auth/env.dart';
 import 'package:auth/generated/auth.pbgrpc.dart';
+import 'package:auth/Utils/utils.dart';
 import 'package:grpc/grpc.dart';
 import 'package:grpc/src/server/call.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
@@ -49,11 +50,11 @@ class AuthRpc extends AuthRpcServiceBase {
     if (request.password.isEmpty) throw GrpcError.invalidArgument('Password not found');
     if (request.username.isEmpty) throw GrpcError.invalidArgument('Username not fount');
 
-    // Создание id пол ьзователя при обращении к базе данных
+    // Создание id пол пользователя при обращении к базе данных
     final id = await db.users.insertOne(UserInsertRequest(
       username: request.username, 
       email: request.email,
-      password: request.password
+      password: Utils.getCashPassword(request.password) // Применяем кэширование
     ));
 
     return _createTokens(id.toString()); // Создание токена
