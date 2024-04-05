@@ -60,4 +60,16 @@ abstract class Utils {
     ..id = user.id.toString()
     ..email = encryptField(user.email, isDecode: true)
     ..username = user.username;
+
+  // Проверка на валидность email
+  static bool isValidEmail(String email) {
+    if (email.split("@").length == 2) return true;
+    return false;
+  }
+
+  // Проверка на валидность пароля
+  static bool isValidPassword(String password) {
+    if (4 <= password.length && password.length <= 20) return true;
+    return false;
+  } 
 }

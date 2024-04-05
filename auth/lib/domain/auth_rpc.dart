@@ -56,7 +56,7 @@ class AuthRpc extends AuthRpcServiceBase {
   @override
   Future<TokensDto> siginIn(ServiceCall call, UserDto request) async {
     // Проверки данных
-    if (request.email.isEmpty) throw GrpcError.invalidArgument('Email not found');
+    if (request.email.isEmpty || !Utils.isValidEmail(request.email)) throw GrpcError.invalidArgument('Email ERROR');
     if (request.password.isEmpty) throw GrpcError.invalidArgument('Password not found');
 
     // Поиск пользователя
@@ -85,8 +85,8 @@ class AuthRpc extends AuthRpcServiceBase {
   @override
   Future<TokensDto> siginUp(ServiceCall call, UserDto request) async {
     // Проверка данных
-    if (request.email.isEmpty) throw GrpcError.invalidArgument('Email not found');
-    if (request.password.isEmpty) throw GrpcError.invalidArgument('Password not found');
+    if (request.email.isEmpty || !Utils.isValidEmail(request.email)) throw GrpcError.invalidArgument('Email ERROR');
+    if (request.password.isEmpty || !Utils.isValidPassword(request.password)) throw GrpcError.invalidArgument('Password ERROR');
     if (request.username.isEmpty) throw GrpcError.invalidArgument('Username not fount');
 
     // Создание id пол пользователя при обращении к базе данных
@@ -107,7 +107,7 @@ class AuthRpc extends AuthRpcServiceBase {
       UserUpdateRequest(
         id: id,
         username: request.username.isEmpty ? null : request.username,
-        email: request.email.isEmpty ? null : Utils.encryptField(request.email),
+        email: !Utils.isValidEmail(request.email) || request.email.isEmpty ? null : Utils.encryptField(request.email),
         password: request.password.isEmpty ? null : Utils.getCashPassword(request.password),
       ));
 

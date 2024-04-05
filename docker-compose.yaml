@@ -1,6 +1,13 @@
 version: '3.5'
 
 services:
+    # auth:
+    #   container_name: auth
+    #   build: ./auth
+    #   ports:
+    #     - 
+
+    # Database
     db_auth:
       container_name: db_auth
       ports:
