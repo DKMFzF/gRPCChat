@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:auth/data/db.dart';
 import 'package:auth/data/grpc_interceptors.dart';
 import 'package:auth/domain/auth_rpc.dart';
+import 'package:auth/env.dart';
 import 'package:grpc/grpc.dart';
 
 /* 
@@ -22,7 +23,7 @@ Future<void> startServer() async {
           GrpcEnterceptors.tokenEnterceptors,
         ], 
         CodecRegistry(codecs: [GzipCodec()]));
-    await authServer.serve(port: 4400);
+    await authServer.serve(port: Env.prot);
     log("SERVER LISTING ON PORT ${authServer.port}");
 
     // Подключение DataBase
