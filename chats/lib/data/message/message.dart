@@ -1,3 +1,5 @@
+// ORM модель message
+
 import 'package:stormberry/stormberry.dart';
 
 part 'message.schema.dart';

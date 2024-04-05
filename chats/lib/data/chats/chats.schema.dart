@@ -1,3 +1,5 @@
+// Файл для работы с ORM моделью Chats
+
 // ignore_for_file: annotate_overrides
 
 part of 'chats.dart';

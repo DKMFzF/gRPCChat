@@ -1,4 +1,4 @@
-// Файл для работы с базой данных
+// Создание бд
 
 import 'package:stormberry/stormberry.dart';
 

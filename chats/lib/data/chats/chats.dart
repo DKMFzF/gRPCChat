@@ -1,3 +1,5 @@
+// Класс ORM модели Chats
+
 import 'package:chats/data/message/message.dart';
 import 'package:stormberry/stormberry.dart';
 

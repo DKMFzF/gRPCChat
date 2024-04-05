@@ -1,3 +1,5 @@
+// Файл для работы с ORM моделью message
+
 // ignore_for_file: annotate_overrides
 
 part of 'message.dart';
