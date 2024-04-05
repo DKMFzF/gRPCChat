@@ -5,7 +5,6 @@ import 'package:chats/data/chats/chats.dart';
 import 'package:chats/data/db.dart';
 import 'package:chats/generated/chats.pbgrpc.dart';
 import 'package:grpc/grpc.dart';
-import 'package:grpc/src/server/call.dart';
 
 class ChatRpc extends ChatsRpcServiceBase {
   @override
