@@ -1,10 +1,13 @@
 // Класс реализации методов описанных в chats.proto
 
+import 'dart:isolate';
+
 import 'package:chats/Utils/utils.dart';
 import 'package:chats/data/chats/chats.dart';
 import 'package:chats/data/db.dart';
 import 'package:chats/generated/chats.pbgrpc.dart';
 import 'package:grpc/grpc.dart';
+import 'package:stormberry/stormberry.dart';
 
 class ChatRpc extends ChatsRpcServiceBase {
   @override
@@ -31,12 +34,19 @@ class ChatRpc extends ChatsRpcServiceBase {
     throw UnimplementedError();
   }
 
+  // Метод для получения всех чатов пользователя
   @override
-  Future<ListChatsDto> fetchAllChats(ServiceCall call, RequestDto request) {
-    // TODO: implement fetchAllChats
-    throw UnimplementedError();
+  Future<ListChatsDto> fetchAllChats(
+      ServiceCall call, RequestDto request) async {
+    final id = Utils.getIdFromMetaData(call);
+    final listChats = await db.chatses.queryChatses(QueryParams( // Перебор всех значений в SQL
+      where: 'author_id=@id',
+      values: {'id': id},
+    ));
+    if (listChats.isEmpty) return ListChatsDto(chats: []);
+    return await Isolate.run(() => Utils.parsChats(listChats)); // Разобраться
   }
-
+  
   @override
   Future<ChatDto> fetchChats(ServiceCall call, ChatDto request) {
     // TODO: implement fetchChats
