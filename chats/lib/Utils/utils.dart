@@ -36,7 +36,7 @@ abstract class Utils {
   }
 
   // Метод преобразования списка ChatsView в ListChatsDto (Разобратся как работает)
-  static ListChatsDto parsChats(List<ChatsView> list) {
+  static ListChatsDto parsChats(List<ShortChatsView> list) {
     try {
       return ListChatsDto(chats: [
         ...list.map(
@@ -48,7 +48,7 @@ abstract class Utils {
     }
   }
 
-  static ChatDto parsChatsDto(ChatsView cv) {
+  static ChatDto parsChatsDto(FullChatsView cv) {
     return ChatDto(
       author: cv.authorId,
       id: cv.id.toString(),

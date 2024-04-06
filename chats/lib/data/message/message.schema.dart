@@ -41,8 +41,8 @@ class _MessageRepository extends BaseRepository
     if (requests.isEmpty) return [];
     var values = QueryValues();
     var rows = await db.query(
-      'INSERT INTO "messages" ( "body", "author_id", "chat_id", "chats_id" )\n'
-      'VALUES ${requests.map((r) => '( ${values.add(r.body)}:text, ${values.add(r.authorId)}:text, ${values.add(r.chatId)}:text, ${values.add(r.chatsId)}:int8 )').join(', ')}\n'
+      'INSERT INTO "messages" ( "body", "author_id", "chats_id" )\n'
+      'VALUES ${requests.map((r) => '( ${values.add(r.body)}:text, ${values.add(r.authorId)}:text, ${values.add(r.chatsId)}:int8 )').join(', ')}\n'
       'RETURNING "id"',
       values.values,
     );
@@ -57,9 +57,9 @@ class _MessageRepository extends BaseRepository
     var values = QueryValues();
     await db.query(
       'UPDATE "messages"\n'
-      'SET "body" = COALESCE(UPDATED."body", "messages"."body"), "author_id" = COALESCE(UPDATED."author_id", "messages"."author_id"), "chat_id" = COALESCE(UPDATED."chat_id", "messages"."chat_id"), "chats_id" = COALESCE(UPDATED."chats_id", "messages"."chats_id")\n'
-      'FROM ( VALUES ${requests.map((r) => '( ${values.add(r.id)}:int8::int8, ${values.add(r.body)}:text::text, ${values.add(r.authorId)}:text::text, ${values.add(r.chatId)}:text::text, ${values.add(r.chatsId)}:int8::int8 )').join(', ')} )\n'
-      'AS UPDATED("id", "body", "author_id", "chat_id", "chats_id")\n'
+      'SET "body" = COALESCE(UPDATED."body", "messages"."body"), "author_id" = COALESCE(UPDATED."author_id", "messages"."author_id"), "chats_id" = COALESCE(UPDATED."chats_id", "messages"."chats_id")\n'
+      'FROM ( VALUES ${requests.map((r) => '( ${values.add(r.id)}:int8::int8, ${values.add(r.body)}:text::text, ${values.add(r.authorId)}:text::text, ${values.add(r.chatsId)}:int8::int8 )').join(', ')} )\n'
+      'AS UPDATED("id", "body", "author_id", "chats_id")\n'
       'WHERE "messages"."id" = UPDATED."id"',
       values.values,
     );
@@ -70,13 +70,11 @@ class MessageInsertRequest {
   MessageInsertRequest({
     required this.body,
     required this.authorId,
-    required this.chatId,
-    required this.chatsId,
+    this.chatsId,
   });
 
   final String body;
   final String authorId;
-  final String chatId;
   final int? chatsId;
 }
 
@@ -85,14 +83,12 @@ class MessageUpdateRequest {
     required this.id,
     this.body,
     this.authorId,
-    this.chatId,
     this.chatsId,
   });
 
   final int id;
   final String? body;
   final String? authorId;
-  final String? chatId;
   final int? chatsId;
 }
 
@@ -111,11 +107,8 @@ class MessageViewQueryable extends KeyedViewQueryable<MessageView, int> {
   String get tableAlias => 'messages';
 
   @override
-  MessageView decode(TypedMap map) => MessageView(
-      id: map.get('id'),
-      body: map.get('body'),
-      authorId: map.get('author_id'),
-      chatId: map.get('chat_id'));
+  MessageView decode(TypedMap map) =>
+      MessageView(id: map.get('id'), body: map.get('body'), authorId: map.get('author_id'));
 }
 
 class MessageView {
@@ -123,11 +116,9 @@ class MessageView {
     required this.id,
     required this.body,
     required this.authorId,
-    required this.chatId,
   });
 
   final int id;
   final String body;
   final String authorId;
-  final String chatId;
 }

@@ -29,7 +29,7 @@ class ChatRpc extends ChatsRpcServiceBase {
     final authorId = Utils.getIdFromMetaData(call);
     final chatId = int.tryParse(request.id);
     if (chatId == null) throw GrpcError.invalidArgument('Not found chat id');
-    final chat = await db.chatses.queryChats(chatId);
+    final chat = await db.chatses.queryShortView(chatId);
     if (chat == null) throw GrpcError.notFound('Chat not found');  
     if (chat.authorId == authorId.toString()) {
       await db.chatses.deleteOne(chatId);
@@ -59,7 +59,7 @@ class ChatRpc extends ChatsRpcServiceBase {
   @override
   Future<ListChatsDto> fetchAllChats(ServiceCall call, RequestDto request) async {
     final id = Utils.getIdFromMetaData(call);
-    final listChats = await db.chatses.queryChatses(QueryParams( // Перебор всех значений в SQL
+    final listChats = await db.chatses.queryShortViews(QueryParams( // Перебор всех значений в SQL
       where: 'author_id=@id',
       values: {'id': id},
     ));
@@ -72,7 +72,7 @@ class ChatRpc extends ChatsRpcServiceBase {
   Future<ChatDto> fetchChats(ServiceCall call, ChatDto request) async {
     final chatId = int.tryParse(request.id);
     if (chatId == null) throw GrpcError.notFound('Chat not found');
-    final chat = await db.chatses.queryChats(chatId);
+    final chat = await db.chatses.queryFullView(chatId);
     final authorId = Utils.getIdFromMetaData(call);
     if (chat == null) throw GrpcError.notFound('Chat not found');  
     if (chat.authorId == authorId.toString()) {
@@ -100,7 +100,6 @@ class ChatRpc extends ChatsRpcServiceBase {
         body: request.body, 
         authorId: authorId.toString(), 
         chatsId: chatId,
-        chatId: 'None',
     ));
     return ResponseDto(message: 'Message sent');
   }

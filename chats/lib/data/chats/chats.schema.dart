@@ -14,8 +14,10 @@ abstract class ChatsRepository
         ModelRepositoryDelete<int> {
   factory ChatsRepository._(Database db) = _ChatsRepository;
 
-  Future<ChatsView?> queryChats(int id);
-  Future<List<ChatsView>> queryChatses([QueryParams? params]);
+  Future<ShortChatsView?> queryShortView(int id);
+  Future<List<ShortChatsView>> queryShortViews([QueryParams? params]);
+  Future<FullChatsView?> queryFullView(int id);
+  Future<List<FullChatsView>> queryFullViews([QueryParams? params]);
 }
 
 class _ChatsRepository extends BaseRepository
@@ -27,13 +29,23 @@ class _ChatsRepository extends BaseRepository
   _ChatsRepository(super.db) : super(tableName: 'chatses', keyName: 'id');
 
   @override
-  Future<ChatsView?> queryChats(int id) {
-    return queryOne(id, ChatsViewQueryable());
+  Future<ShortChatsView?> queryShortView(int id) {
+    return queryOne(id, ShortChatsViewQueryable());
   }
 
   @override
-  Future<List<ChatsView>> queryChatses([QueryParams? params]) {
-    return queryMany(ChatsViewQueryable(), params);
+  Future<List<ShortChatsView>> queryShortViews([QueryParams? params]) {
+    return queryMany(ShortChatsViewQueryable(), params);
+  }
+
+  @override
+  Future<FullChatsView?> queryFullView(int id) {
+    return queryOne(id, FullChatsViewQueryable());
+  }
+
+  @override
+  Future<List<FullChatsView>> queryFullViews([QueryParams? params]) {
+    return queryMany(FullChatsViewQueryable(), params);
   }
 
   @override
@@ -88,7 +100,38 @@ class ChatsUpdateRequest {
   final String? authorId;
 }
 
-class ChatsViewQueryable extends KeyedViewQueryable<ChatsView, int> {
+class ShortChatsViewQueryable extends KeyedViewQueryable<ShortChatsView, int> {
+  @override
+  String get keyName => 'id';
+
+  @override
+  String encodeKey(int key) => TextEncoder.i.encode(key);
+
+  @override
+  String get query => 'SELECT "chatses".*'
+      'FROM "chatses"';
+
+  @override
+  String get tableAlias => 'chatses';
+
+  @override
+  ShortChatsView decode(TypedMap map) =>
+      ShortChatsView(id: map.get('id'), name: map.get('name'), authorId: map.get('author_id'));
+}
+
+class ShortChatsView {
+  ShortChatsView({
+    required this.id,
+    required this.name,
+    required this.authorId,
+  });
+
+  final int id;
+  final String name;
+  final String authorId;
+}
+
+class FullChatsViewQueryable extends KeyedViewQueryable<FullChatsView, int> {
   @override
   String get keyName => 'id';
 
@@ -110,15 +153,15 @@ class ChatsViewQueryable extends KeyedViewQueryable<ChatsView, int> {
   String get tableAlias => 'chatses';
 
   @override
-  ChatsView decode(TypedMap map) => ChatsView(
+  FullChatsView decode(TypedMap map) => FullChatsView(
       id: map.get('id'),
       name: map.get('name'),
       authorId: map.get('author_id'),
       message: map.getListOpt('message', MessageViewQueryable().decoder) ?? const []);
 }
 
-class ChatsView {
-  ChatsView({
+class FullChatsView {
+  FullChatsView({
     required this.id,
     required this.name,
     required this.authorId,

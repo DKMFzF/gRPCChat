@@ -5,7 +5,9 @@ import 'package:stormberry/stormberry.dart';
 
 part 'chats.schema.dart';
 
-@Model()
+@Model(
+  views: [#Short, #Full] // Схемы
+)
 abstract class Chats {
   @PrimaryKey()
   @AutoIncrement()
@@ -13,5 +15,7 @@ abstract class Chats {
   
   String get name;
   String get authorId;
+
+  @HiddenIn(#Short) // Скрытие имен в схеме
   List<Message> get message;
 }
