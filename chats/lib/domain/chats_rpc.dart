@@ -46,8 +46,7 @@ class ChatRpc extends ChatsRpcServiceBase {
 
   // Метод для получения всех чатов пользователя
   @override
-  Future<ListChatsDto> fetchAllChats(
-      ServiceCall call, RequestDto request) async {
+  Future<ListChatsDto> fetchAllChats(ServiceCall call, RequestDto request) async {
     final id = Utils.getIdFromMetaData(call);
     final listChats = await db.chatses.queryChatses(QueryParams( // Перебор всех значений в SQL
       where: 'author_id=@id',
@@ -57,10 +56,19 @@ class ChatRpc extends ChatsRpcServiceBase {
     return await Isolate.run(() => Utils.parsChats(listChats)); // Изолирующий поток для парсинга данных
   }
   
+  // Получение чата из базы данных
   @override
-  Future<ChatDto> fetchChats(ServiceCall call, ChatDto request) {
-    // TODO: implement fetchChats
-    throw UnimplementedError();
+  Future<ChatDto> fetchChats(ServiceCall call, ChatDto request) async {
+    final chatId = int.tryParse(request.id);
+    if (chatId == null) throw GrpcError.notFound('Chat not found');
+    final chat = await db.chatses.queryChats(chatId);
+    final authorId = Utils.getIdFromMetaData(call);
+    if (chat == null) throw GrpcError.notFound('Chat not found');  
+    if (chat.authorId == authorId.toString()) {
+      return await Isolate.run(() => Utils.parsChatsDto(chat));
+    } else {
+      throw GrpcError.permissionDenied();
+    }
   }
 
   @override
@@ -74,5 +82,4 @@ class ChatRpc extends ChatsRpcServiceBase {
     // TODO: implement sendMessage
     throw UnimplementedError();
   }
-
 }

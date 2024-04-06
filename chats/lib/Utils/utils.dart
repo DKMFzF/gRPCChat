@@ -1,6 +1,7 @@
 // Класс для утилит
 
 import 'package:chats/data/chats/chats.dart';
+import 'package:chats/data/message/message.dart';
 import 'package:chats/env.dart';
 import 'package:chats/generated/chats.pb.dart';
 import 'package:grpc/grpc.dart';
@@ -45,5 +46,24 @@ abstract class Utils {
     } catch(_) {
       rethrow;
     }
+  }
+
+  static ChatDto parsChatsDto(ChatsView cv) {
+    return ChatDto(
+      author: cv.authorId,
+      id: cv.id.toString(),
+      name: cv.name,
+      message: [
+        ...cv.message.map((e) => parsMessageDto(e)
+      )]
+    );
+  }
+
+  static MessageDto parsMessageDto(MessageView mv) {
+    return MessageDto(
+      authorId: mv.authorId,
+      body: mv.body,
+      id: mv.id.toString(),
+    );
   }
 }
