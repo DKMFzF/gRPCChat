@@ -39,10 +39,20 @@ class ChatRpc extends ChatsRpcServiceBase {
     }
   }
 
+  // Метод для удалений сообщений из чата
   @override
-  Future<ResponseDto> deleteMessage(ServiceCall call, MessageDto request) {
-    // TODO: implement deleteMessage
-    throw UnimplementedError();
+  Future<ResponseDto> deleteMessage(ServiceCall call, MessageDto request) async {
+    final messageId = int.tryParse(request.id);
+    if (messageId == null) throw GrpcError.invalidArgument('Not found message id');
+    final message = await db.messages.queryMessage(messageId);
+    if (message == null) throw GrpcError.invalidArgument('Message not found');
+    final userId = Utils.getIdFromMetaData(call);
+    if (message.authorId == userId.toString()) {
+      await db.messages.deleteOne(messageId);
+      return ResponseDto(message: 'Message deleted');
+    } else {
+      throw GrpcError.permissionDenied();
+    }
   }
 
   // Метод для получения всех чатов пользователя
