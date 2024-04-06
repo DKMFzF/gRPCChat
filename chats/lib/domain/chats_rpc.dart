@@ -5,6 +5,7 @@ import 'dart:isolate';
 import 'package:chats/Utils/utils.dart';
 import 'package:chats/data/chats/chats.dart';
 import 'package:chats/data/db.dart';
+import 'package:chats/data/message/message.dart';
 import 'package:chats/generated/chats.pbgrpc.dart';
 import 'package:grpc/grpc.dart';
 import 'package:stormberry/stormberry.dart';
@@ -77,9 +78,20 @@ class ChatRpc extends ChatsRpcServiceBase {
     throw UnimplementedError();
   }
 
+  // Метод для отправки сообщений в чат (body - сообщение)
   @override
-  Future<ResponseDto> sendMessage(ServiceCall call, MessageDto request) {
-    // TODO: implement sendMessage
-    throw UnimplementedError();
+  Future<ResponseDto> sendMessage(ServiceCall call, MessageDto request) async {
+    final authorId = Utils.getIdFromMetaData(call);
+    final chatId = int.tryParse(request.chatId);
+    if (chatId == null) throw GrpcError.notFound('Chat not found'); 
+    if (request.body.isEmpty) throw GrpcError.invalidArgument('Body not found');
+    await db.messages.insertOne(
+      MessageInsertRequest(
+        body: request.body, 
+        authorId: authorId.toString(), 
+        chatsId: chatId,
+        chatId: 'None',
+    ));
+    return ResponseDto(message: 'Message sent');
   }
 }

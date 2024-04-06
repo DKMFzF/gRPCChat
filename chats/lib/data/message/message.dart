@@ -12,5 +12,4 @@ abstract class Message {
 
   String get body;
   String get authorId;
-  String get chatId;
 }

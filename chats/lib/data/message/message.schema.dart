@@ -1,5 +1,3 @@
-// Файл для работы с ORM моделью message
-
 // ignore_for_file: annotate_overrides
 
 part of 'message.dart';
@@ -73,7 +71,7 @@ class MessageInsertRequest {
     required this.body,
     required this.authorId,
     required this.chatId,
-    this.chatsId,
+    required this.chatsId,
   });
 
   final String body;
