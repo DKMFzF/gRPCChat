@@ -38,7 +38,8 @@ abstract class Utils {
   static ListChatsDto parsChats(List<ChatsView> list) {
     try {
       return ListChatsDto(chats: [
-        ...list.map((chat) => ChatDto(
+        ...list.map(
+          (chat) => ChatDto(
             author: chat.authorId, id: chat.id.toString(), name: chat.name))
       ]);
     } catch(_) {

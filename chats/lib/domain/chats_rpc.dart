@@ -22,10 +22,20 @@ class ChatRpc extends ChatsRpcServiceBase {
     return ResponseDto(message: 'Chat created');
   }
 
+  // Метод для удаления чата
   @override
-  Future<ResponseDto> deleteChat(ServiceCall call, ChatDto request) {
-    // TODO: implement deleteChat
-    throw UnimplementedError();
+  Future<ResponseDto> deleteChat(ServiceCall call, ChatDto request) async {
+    final authorId = Utils.getIdFromMetaData(call);
+    final chatId = int.tryParse(request.id);
+    if (chatId == null) throw GrpcError.invalidArgument('Not found chat id');
+    final chat = await db.chatses.queryChats(chatId);
+    if (chat == null) throw GrpcError.notFound('Chat not found');  
+    if (chat.authorId == authorId.toString()) {
+      await db.chatses.deleteOne(chatId);
+      return ResponseDto(message: 'Chat deleted');
+    } else {
+      throw GrpcError.permissionDenied();
+    }
   }
 
   @override
@@ -44,7 +54,7 @@ class ChatRpc extends ChatsRpcServiceBase {
       values: {'id': id},
     ));
     if (listChats.isEmpty) return ListChatsDto(chats: []);
-    return await Isolate.run(() => Utils.parsChats(listChats)); // Разобраться
+    return await Isolate.run(() => Utils.parsChats(listChats)); // Изолирующий поток для парсинга данных
   }
   
   @override
