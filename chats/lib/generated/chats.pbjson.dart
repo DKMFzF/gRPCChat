@@ -42,13 +42,15 @@ const ChatDto$json = {
     {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
     {'1': 'author', '3': 3, '4': 1, '5': 9, '10': 'author'},
     {'1': 'message', '3': 4, '4': 3, '5': 11, '6': '.MessageDto', '10': 'message'},
+    {'1': 'member_id', '3': 5, '4': 1, '5': 9, '10': 'memberId'},
   ],
 };
 
 /// Descriptor for `ChatDto`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List chatDtoDescriptor = $convert.base64Decode(
     'CgdDaGF0RHRvEg4KAmlkGAEgASgJUgJpZBISCgRuYW1lGAIgASgJUgRuYW1lEhYKBmF1dGhvch'
-    'gDIAEoCVIGYXV0aG9yEiUKB21lc3NhZ2UYBCADKAsyCy5NZXNzYWdlRHRvUgdtZXNzYWdl');
+    'gDIAEoCVIGYXV0aG9yEiUKB21lc3NhZ2UYBCADKAsyCy5NZXNzYWdlRHRvUgdtZXNzYWdlEhsK'
+    'CW1lbWJlcl9pZBgFIAEoCVIIbWVtYmVySWQ=');
 
 @$core.Deprecated('Use messageDtoDescriptor instead')
 const MessageDto$json = {

@@ -53,8 +53,8 @@ class _ChatsRepository extends BaseRepository
     if (requests.isEmpty) return [];
     var values = QueryValues();
     var rows = await db.query(
-      'INSERT INTO "chatses" ( "name", "author_id" )\n'
-      'VALUES ${requests.map((r) => '( ${values.add(r.name)}:text, ${values.add(r.authorId)}:text )').join(', ')}\n'
+      'INSERT INTO "chatses" ( "name", "author_id", "member_id" )\n'
+      'VALUES ${requests.map((r) => '( ${values.add(r.name)}:text, ${values.add(r.authorId)}:text, ${values.add(r.memberId)}:text )').join(', ')}\n'
       'RETURNING "id"',
       values.values,
     );
@@ -69,9 +69,9 @@ class _ChatsRepository extends BaseRepository
     var values = QueryValues();
     await db.query(
       'UPDATE "chatses"\n'
-      'SET "name" = COALESCE(UPDATED."name", "chatses"."name"), "author_id" = COALESCE(UPDATED."author_id", "chatses"."author_id")\n'
-      'FROM ( VALUES ${requests.map((r) => '( ${values.add(r.id)}:int8::int8, ${values.add(r.name)}:text::text, ${values.add(r.authorId)}:text::text )').join(', ')} )\n'
-      'AS UPDATED("id", "name", "author_id")\n'
+      'SET "name" = COALESCE(UPDATED."name", "chatses"."name"), "author_id" = COALESCE(UPDATED."author_id", "chatses"."author_id"), "member_id" = COALESCE(UPDATED."member_id", "chatses"."member_id")\n'
+      'FROM ( VALUES ${requests.map((r) => '( ${values.add(r.id)}:int8::int8, ${values.add(r.name)}:text::text, ${values.add(r.authorId)}:text::text, ${values.add(r.memberId)}:text::text )').join(', ')} )\n'
+      'AS UPDATED("id", "name", "author_id", "member_id")\n'
       'WHERE "chatses"."id" = UPDATED."id"',
       values.values,
     );
@@ -82,10 +82,12 @@ class ChatsInsertRequest {
   ChatsInsertRequest({
     required this.name,
     required this.authorId,
+    this.memberId,
   });
 
   final String name;
   final String authorId;
+  final String? memberId;
 }
 
 class ChatsUpdateRequest {
@@ -93,11 +95,13 @@ class ChatsUpdateRequest {
     required this.id,
     this.name,
     this.authorId,
+    this.memberId,
   });
 
   final int id;
   final String? name;
   final String? authorId;
+  final String? memberId;
 }
 
 class ShortChatsViewQueryable extends KeyedViewQueryable<ShortChatsView, int> {
@@ -115,8 +119,11 @@ class ShortChatsViewQueryable extends KeyedViewQueryable<ShortChatsView, int> {
   String get tableAlias => 'chatses';
 
   @override
-  ShortChatsView decode(TypedMap map) =>
-      ShortChatsView(id: map.get('id'), name: map.get('name'), authorId: map.get('author_id'));
+  ShortChatsView decode(TypedMap map) => ShortChatsView(
+      id: map.get('id'),
+      name: map.get('name'),
+      authorId: map.get('author_id'),
+      memberId: map.getOpt('member_id'));
 }
 
 class ShortChatsView {
@@ -124,11 +131,13 @@ class ShortChatsView {
     required this.id,
     required this.name,
     required this.authorId,
+    this.memberId,
   });
 
   final int id;
   final String name;
   final String authorId;
+  final String? memberId;
 }
 
 class FullChatsViewQueryable extends KeyedViewQueryable<FullChatsView, int> {
@@ -157,6 +166,7 @@ class FullChatsViewQueryable extends KeyedViewQueryable<FullChatsView, int> {
       id: map.get('id'),
       name: map.get('name'),
       authorId: map.get('author_id'),
+      memberId: map.getOpt('member_id'),
       message: map.getListOpt('message', MessageViewQueryable().decoder) ?? const []);
 }
 
@@ -165,11 +175,13 @@ class FullChatsView {
     required this.id,
     required this.name,
     required this.authorId,
+    this.memberId,
     required this.message,
   });
 
   final int id;
   final String name;
   final String authorId;
+  final String? memberId;
   final List<MessageView> message;
 }

@@ -15,10 +15,12 @@ class ChatRpc extends ChatsRpcServiceBase {
   Future<ResponseDto> createChat(ServiceCall call, ChatDto request) async {
     final id = Utils.getIdFromMetaData(call); 
     if (request.name.isEmpty) throw GrpcError.invalidArgument('Not found chat name'); 
+    if (request.memberId.isEmpty) throw GrpcError.invalidArgument('Not found member id');
     await db.chatses.insertOne(
       ChatsInsertRequest(
         name: request.name, 
-        authorId: id.toString())
+        authorId: id.toString(),
+        memberId: request.memberId)
     );
     return ResponseDto(message: 'Chat created');
   }
