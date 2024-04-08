@@ -15,6 +15,7 @@ abstract class Chats {
   
   String get name;
   String get authorId;
+  String? get memberId;
 
   @HiddenIn(#Short) // Скрытие имен в схеме
   List<Message> get message;
