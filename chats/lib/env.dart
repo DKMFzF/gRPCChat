@@ -7,8 +7,8 @@ import 'dart:io';
 
 abstract class Env {
   // Порт сервера
-  static int prot = int.tryParse(Platform.environment['PORT'] ?? '4401')!;
+  static int prot = int.tryParse(Platform.environment['PORT']!)!;
 
   // Секретный ключ для доступак токену
-  static String sk = Platform.environment['SK'] ?? 'secret_key';
+  static String sk = Platform.environment['SK']!;
 }
