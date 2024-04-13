@@ -71,5 +71,16 @@ abstract class Utils {
   static bool isValidPassword(String password) {
     if (4 <= password.length && password.length <= 20) return true;
     return false;
+  }
+
+  // Парсинг Users в List<UserDto>
+  static ListUsersDto convertListUsersDto(List<UserView> users) {
+    try {
+      return ListUsersDto(
+        users: [...users.map((e) => convertUserDto(e))],
+      );
+    } catch (e) {
+      throw GrpcError.internal('ERROR METHOD convertListUsersDto: ${e.toString()}');
+    }
   } 
 }

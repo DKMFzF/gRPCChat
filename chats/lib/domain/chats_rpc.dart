@@ -17,13 +17,6 @@ class ChatRpc extends ChatsRpcServiceBase {
     if (request.name.isEmpty) throw GrpcError.invalidArgument('Not found chat name'); 
     if (request.memberId.isEmpty) throw GrpcError.invalidArgument('Not found memberId');
     if (request.memberId == id.toString()) throw GrpcError.notFound('You can not add yourself');
-    final listChats = await db.chatses.queryShortViews(QueryParams( // Перебор всех значений в SQL
-      where: 'author_id=@id OR member_id=@id',
-      values: {'id': id},
-    ));
-    if (request.memberId == id.toString()) throw GrpcError.notFound(
-      'Ошибка в id.File'
-    ); // Отлов ошибки x2
     await db.chatses.insertOne(
       ChatsInsertRequest(
         name: request.name, 
