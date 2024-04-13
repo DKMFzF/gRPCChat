@@ -1,5 +1,6 @@
 // Класс реализации методов описанных в chats.proto
 
+import 'dart:async';
 import 'dart:isolate';
 
 import 'package:chats/Utils/utils.dart';
@@ -8,9 +9,13 @@ import 'package:chats/data/db.dart';
 import 'package:chats/data/message/message.dart';
 import 'package:chats/generated/chats.pbgrpc.dart';
 import 'package:grpc/grpc.dart';
+import 'package:protobuf/protobuf.dart';
 import 'package:stormberry/stormberry.dart';
 
 class ChatRpc extends ChatsRpcServiceBase {
+
+  final StreamController<MessageDto> _streamController = StreamController.broadcast();
+
   @override
   Future<ResponseDto> createChat(ServiceCall call, ChatDto request) async {
     final id = Utils.getIdFromMetaData(call); 
@@ -85,10 +90,11 @@ class ChatRpc extends ChatsRpcServiceBase {
     } 
   }
 
+  // Получение всех сообщений из чата
   @override
-  Stream<MessageDto> listenChat(ServiceCall call, ChatDto request) {
-    // TODO: implement listenChat
-    throw UnimplementedError();
+  Stream<MessageDto> listenChat(ServiceCall call, ChatDto request) async* {
+    if (request.id.isEmpty) throw GrpcError.invalidArgument('Not found chat id');
+    yield* _streamController.stream.where((event) => event.chatId == request.id);
   }
 
   // Метод для отправки сообщений в чат (body - сообщение)
@@ -98,12 +104,13 @@ class ChatRpc extends ChatsRpcServiceBase {
     final chatId = int.tryParse(request.chatId);
     if (chatId == null) throw GrpcError.notFound('Chat not found'); 
     if (request.body.isEmpty) throw GrpcError.invalidArgument('Body not found');
-    await db.messages.insertOne(
+    final id = await db.messages.insertOne(
       MessageInsertRequest(
         body: request.body, 
         authorId: authorId.toString(), 
         chatsId: chatId,
     ));
+    _streamController.add(request.deepCopy()..authorId = authorId.toString()..id = id.toString());
     return ResponseDto(message: 'Message sent');
   }
 }
