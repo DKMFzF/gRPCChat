@@ -39,9 +39,11 @@ abstract class Utils {
   static ListChatsDto parsChats(List<ShortChatsView> list) {
     try {
       return ListChatsDto(chats: [
-        ...list.map(
+        ...list.map( 
           (chat) => ChatDto(
-            author: chat.authorId, id: chat.id.toString(), name: chat.name))
+            memberId: chat.memberId,
+            author: chat.authorId, 
+            id: chat.id.toString(), name: chat.name))
       ]);
     } catch(_) {
       rethrow;
@@ -55,7 +57,8 @@ abstract class Utils {
       name: cv.name,
       message: [
         ...cv.message.map((e) => parsMessageDto(e)
-      )]
+      )], 
+      memberId: cv.memberId,
     );
   }
 

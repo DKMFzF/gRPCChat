@@ -15,7 +15,15 @@ class ChatRpc extends ChatsRpcServiceBase {
   Future<ResponseDto> createChat(ServiceCall call, ChatDto request) async {
     final id = Utils.getIdFromMetaData(call); 
     if (request.name.isEmpty) throw GrpcError.invalidArgument('Not found chat name'); 
-    if (request.memberId.isEmpty) throw GrpcError.invalidArgument('Not found member id');
+    if (request.memberId.isEmpty) throw GrpcError.invalidArgument('Not found memberId');
+    if (request.memberId == id.toString()) throw GrpcError.notFound('You can not add yourself');
+    final listChats = await db.chatses.queryShortViews(QueryParams( // Перебор всех значений в SQL
+      where: 'author_id=@id OR member_id=@id',
+      values: {'id': id},
+    ));
+    if (request.memberId == id.toString()) throw GrpcError.notFound(
+      'Ошибка в id.File'
+    ); // Отлов ошибки x2
     await db.chatses.insertOne(
       ChatsInsertRequest(
         name: request.name, 
@@ -62,7 +70,7 @@ class ChatRpc extends ChatsRpcServiceBase {
   Future<ListChatsDto> fetchAllChats(ServiceCall call, RequestDto request) async {
     final id = Utils.getIdFromMetaData(call);
     final listChats = await db.chatses.queryShortViews(QueryParams( // Перебор всех значений в SQL
-      where: 'author_id=@id',
+      where: 'author_id=@id OR member_id=@id',
       values: {'id': id},
     ));
     if (listChats.isEmpty) return ListChatsDto(chats: []);
@@ -77,11 +85,11 @@ class ChatRpc extends ChatsRpcServiceBase {
     final chat = await db.chatses.queryFullView(chatId);
     final authorId = Utils.getIdFromMetaData(call);
     if (chat == null) throw GrpcError.notFound('Chat not found');  
-    if (chat.authorId == authorId.toString()) {
+    if (chat.authorId == authorId.toString() || chat.memberId == authorId.toString()) {
       return await Isolate.run(() => Utils.parsChatsDto(chat));
     } else {
       throw GrpcError.permissionDenied();
-    }
+    } 
   }
 
   @override
