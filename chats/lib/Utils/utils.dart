@@ -31,7 +31,7 @@ abstract class Utils {
     Возвращает идентификатор, полученный из токена.
   */
   static int getIdFromMetaData(ServiceCall serviceCall) {
-    final accessToken = serviceCall.clientMetadata?['access_token'] ?? ''; 
+    final accessToken = serviceCall.clientMetadata?['token'] ?? ''; 
     return getIdFromToken(accessToken);
   }
 

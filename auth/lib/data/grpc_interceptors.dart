@@ -21,7 +21,7 @@ abstract class GrpcEnterceptors {
       // Проверка на методы не требующие токена
       if (_excludeMethods.contains(serviceMethod.name)) return null;
 
-      final token = call.clientMetadata?['access_token'] ?? '';
+      final token = call.clientMetadata?['token'] ?? '';
       final jwtClaim = verifyJwtHS256Signature(token, Env.sk);
       jwtClaim.validate();
       return null;
